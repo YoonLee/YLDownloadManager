@@ -52,10 +52,8 @@
     // https://github.com/AFNetworking/AFNetworking
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
     AFURLSessionManager *sessionManager = [self sessionManager];
-    
-    NSProgress *progress = nil;
     NSURLSessionDownloadTask *downloadTask = [sessionManager downloadTaskWithRequest:request
-                                                                            progress:&progress
+                                                                            progress:nil
                                                                          destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
                                                                              NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory
                                                                                                                                                    inDomain:NSUserDomainMask
@@ -70,7 +68,15 @@
                                                                    }];
     [downloadTask resume];
     
-    [progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:NULL];
+//    [sessionManager setDownloadTaskDidWriteDataBlock:^(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
+//        CLog(@"%@", downloadTask);
+//    }];
+    
+    [sessionManager setDownloadTaskDidFinishDownloadingBlock:^NSURL *(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, NSURL *location) {
+        CLog(@"%@", downloadTask);
+        
+        return nil;
+    }];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

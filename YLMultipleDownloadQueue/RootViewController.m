@@ -8,6 +8,7 @@
 
 #import "RootViewController.h"
 #import "YLDownloadManager.h"
+#import "UIBarButtonItem+Category.h"
 
 @implementation RootViewController
 @synthesize contents;
@@ -19,6 +20,18 @@
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
         [self setEdgesForExtendedLayout:UIRectEdgeNone];
     }
+    
+    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithTitle:@"LOOP"
+                                                                       style:UIBarButtonItemStyleDone
+                                                                 actionBlock:^(UIBarButtonItem *rightBarButton) {
+                                                                     // loop test
+                                                                     [self.contents enumerateObjectsUsingBlock:^(NSDictionary *info, NSUInteger idx, BOOL *stop) {
+                                                                         NSString *URLStr = [info objectForKey:@"URI"];
+                                                                         NSURL *URL = [NSURL URLWithString:URLStr];
+                                                                         [[YLDownloadManager sharedInstance] addDownloadTaskFrom:URL];
+                                                                     }];
+                                                                 }];
+    [self.navigationItem setRightBarButtonItem:rightBarButton];
     
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"DownloadList" ofType:@"plist"];
     contents = [[NSArray alloc] initWithContentsOfFile:filePath];
