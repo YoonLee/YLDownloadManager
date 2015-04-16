@@ -21,7 +21,7 @@
         [self setEdgesForExtendedLayout:UIRectEdgeNone];
     }
     
-    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithTitle:@"LOOP"
+    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithTitle:@"ALL"
                                                                        style:UIBarButtonItemStyleDone
                                                                  actionBlock:^(UIBarButtonItem *rightBarButton) {
                                                                      // loop test
@@ -44,7 +44,7 @@
     [tableView setTableFooterView:[UIView new]];
     [self.view addSubview:tableView];
     
-    [[YLDownloadManager sharedInstance] setMaximumConcurrentOperation:2];
+    [[YLDownloadManager sharedInstance] setMaximumConcurrentOperation:3];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

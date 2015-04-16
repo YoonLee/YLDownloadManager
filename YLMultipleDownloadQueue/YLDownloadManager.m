@@ -68,23 +68,9 @@
                                                                    }];
     [downloadTask resume];
     
-//    [sessionManager setDownloadTaskDidWriteDataBlock:^(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
-//        CLog(@"%@", downloadTask);
-//    }];
-    
-    [sessionManager setDownloadTaskDidFinishDownloadingBlock:^NSURL *(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, NSURL *location) {
-        CLog(@"%@", downloadTask);
-        
-        return nil;
+    [sessionManager setDownloadTaskDidWriteDataBlock:^(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
+        CLog(@"%@", [downloadTask description]);
     }];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:@"fractionCompleted"]) {
-        NSProgress *progress = object;
-        CLog(@"%@", @(progress.fractionCompleted));
-    }
 }
 
 @end
