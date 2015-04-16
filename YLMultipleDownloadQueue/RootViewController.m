@@ -25,7 +25,7 @@
     }
     
     optQueue = [[NSOperationQueue alloc] init];
-    [optQueue setMaxConcurrentOperationCount:1];
+    [optQueue setMaxConcurrentOperationCount:2];
     
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"DownloadList" ofType:@"plist"];
     contents = [[NSArray alloc] initWithContentsOfFile:filePath];
