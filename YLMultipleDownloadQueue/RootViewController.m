@@ -33,6 +33,13 @@
                                                                  }];
     [self.navigationItem setRightBarButtonItem:rightBarButton];
     
+    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithTitle:@"WS"
+                                                                      style:UIBarButtonItemStyleDone
+                                                                actionBlock:^(UIBarButtonItem *leftBarButton) {
+                                                                    CLog(@".calling custom webservices");
+                                                                }];
+    [self.navigationItem setLeftBarButtonItem:leftBarButton];
+    
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"DownloadList" ofType:@"plist"];
     contents = [[NSArray alloc] initWithContentsOfFile:filePath];
     
