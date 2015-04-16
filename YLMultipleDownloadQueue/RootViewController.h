@@ -11,8 +11,11 @@
 @interface RootViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {
     NSArray *contents;
+    
+    NSOperationQueue *optQueue;
 }
 
 @property (nonatomic, strong) NSArray *contents;
+@property (nonatomic, strong) NSOperationQueue *optQueue;
 
 @end

@@ -8,18 +8,37 @@
 
 #import "RootViewController.h"
 #import "YLDownloadManager.h"
+#import "YLWebService.h"
 #import "UIBarButtonItem+Category.h"
 
 @implementation RootViewController
 @synthesize contents;
+@synthesize optQueue;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     [self.view setBackgroundColor:[UIColor whiteColor]];
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
         [self setEdgesForExtendedLayout:UIRectEdgeNone];
     }
+    
+    optQueue = [[NSOperationQueue alloc] init];
+    [optQueue setMaxConcurrentOperationCount:1];
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"DownloadList" ofType:@"plist"];
+    contents = [[NSArray alloc] initWithContentsOfFile:filePath];
+    
+    UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    [tableView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+    [tableView setDelegate:self];
+    [tableView setDataSource:self];
+    [tableView setRowHeight:55.f];
+    [tableView setTableFooterView:[UIView new]];
+    [self.view addSubview:tableView];
+    
+    [[YLDownloadManager sharedInstance] setMaximumConcurrentOperation:1];
     
     UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithTitle:@"ALL"
                                                                        style:UIBarButtonItemStyleDone
@@ -37,21 +56,18 @@
                                                                       style:UIBarButtonItemStyleDone
                                                                 actionBlock:^(UIBarButtonItem *leftBarButton) {
                                                                     CLog(@".calling custom webservices");
+                                                                    NSArray *identity = @[@"A", @"B", @"C", @"D", @"E", @"F", @"G", @"H"];
+                                                                    // 5 operations enqueue and we are limiting only one at a time
+                                                                    for (int i = 0; i < self.contents.count; i ++) {
+                                                                        NSDictionary *info = [self.contents objectAtIndex:i];
+                                                                        NSString *URLStr = [info objectForKey:@"URI"];
+                                                                        // allocate instance
+                                                                        YLWebService *operation = [[YLWebService alloc] initWithURL:[NSURL URLWithString:URLStr] identity:identity[i]];
+                                                                        // enqueue
+                                                                        [self.optQueue addOperation:operation];
+                                                                    }
                                                                 }];
     [self.navigationItem setLeftBarButtonItem:leftBarButton];
-    
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"DownloadList" ofType:@"plist"];
-    contents = [[NSArray alloc] initWithContentsOfFile:filePath];
-    
-    UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-    [tableView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-    [tableView setDelegate:self];
-    [tableView setDataSource:self];
-    [tableView setRowHeight:55.f];
-    [tableView setTableFooterView:[UIView new]];
-    [self.view addSubview:tableView];
-    
-    [[YLDownloadManager sharedInstance] setMaximumConcurrentOperation:3];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

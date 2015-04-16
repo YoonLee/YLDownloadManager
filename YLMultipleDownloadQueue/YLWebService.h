@@ -9,5 +9,5 @@
 #import <Foundation/Foundation.h>
 
 @interface YLWebService : NSOperation
-
+- (instancetype)initWithURL:(NSURL *)qURL identity:(NSString *)qIdentityStr;
 @end
