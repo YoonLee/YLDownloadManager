@@ -7,6 +7,7 @@
 //
 
 #import "ConfigureViewController.h"
+#import "YLSaveUserDefault.h"
 
 @interface ConfigureViewController()
 @property (nonatomic, strong) NSArray *contents;
@@ -62,10 +63,28 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSInteger selected = -1;
+    
+    switch (indexPath.section) {
+        case METHODS:
+            selected = [[[YLSaveUserDefault sharedInstance] getDefaultMethod] integerValue];
+            break;
+        case NUM_OF_MAX_CONCURRENT:
+            selected = [[[YLSaveUserDefault sharedInstance] getDefaultConCurNum] integerValue];
+            break;
+        default:
+            break;
+    }
+    
     NSDictionary *info = [contents objectAtIndex:indexPath.section];
     NSArray *subContent = [info objectForKey:@"rowTitleStrs"];
     NSString *rowTitleStrs = [subContent objectAtIndex:indexPath.row];
     [cell.textLabel setText:rowTitleStrs];
+    [cell setAccessoryType:UITableViewCellAccessoryNone];
+    
+    if (selected == indexPath.row) {
+        [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -83,6 +102,21 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    switch (indexPath.section) {
+        case METHODS:
+            [[YLSaveUserDefault sharedInstance] setDefaultMethod:@(indexPath.row)];
+            if (self.changeCallback) { self.changeCallback(); }
+            break;
+        case NUM_OF_MAX_CONCURRENT:
+            [[YLSaveUserDefault sharedInstance] setDefaultConCurNum:@(indexPath.row)];
+            if (self.changeCallback) { self.changeCallback(); }
+            break;
+        default:
+            break;
+    }
+    
+    [tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning

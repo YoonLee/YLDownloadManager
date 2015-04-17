@@ -9,14 +9,15 @@
 #import "RootViewController.h"
 #import "YLDownloadManager.h"
 #import "YLWebService.h"
+#import "YLSaveUserDefault.h"
 #import "UIBarButtonItem+Category.h"
 #import "ConfigureViewController.h"
 #import <FontAwesomeKit/FontAwesomeKit.h>
 #define HEADER_PANEL_HEIGHT             220.f
-#define MAX_CONCURRENT_RUNNING_QUEUE    5
 
 @implementation RootViewController
 @synthesize contents;
+@synthesize fileURIs;
 @synthesize optQueue;
 
 clock_t start;
@@ -30,7 +31,7 @@ clock_t start;
         [self setEdgesForExtendedLayout:UIRectEdgeNone];
     }
     
-    [self setTitle:@"Queue"];
+    [self setTitle:@"Queue Manager"];
     
     optQueue = [[NSOperationQueue alloc] init];
     [optQueue setMaxConcurrentOperationCount:1];
@@ -40,26 +41,19 @@ clock_t start;
                   options:NSKeyValueObservingOptionNew
                   context:NULL];
     
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"DownloadList" ofType:@"plist"];
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"RootDisplay" ofType:@"plist"];
     contents = [[NSArray alloc] initWithContentsOfFile:filePath];
     
-    CGRect headerFrame = self.view.bounds;
-    headerFrame.size.height = HEADER_PANEL_HEIGHT;
+    NSString *URIsPath = [[NSBundle mainBundle] pathForResource:@"DownloadList" ofType:@"plist"];
+    fileURIs = [[NSArray alloc] initWithContentsOfFile:URIsPath];
     
-    UITextView *textView = [[UITextView alloc] initWithFrame:headerFrame];
-    [textView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
-    [textView setBackgroundColor:RGB(255, 252, 229)];
-    [textView setFont:[UIFont fontWithName:@"Menlo-Bold" size:9.f]];
-    [textView setEditable:NO];
-
-    [[YLConsoleLogTextView sharedInstance] attachTextView:textView];
-    
-    UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
     [tableView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
     [tableView setDelegate:self];
     [tableView setDataSource:self];
-    [tableView setSectionHeaderHeight:30];
-    [tableView setTableHeaderView:textView];
+    
+    // retina line
+    [tableView setSectionFooterHeight:(1.f / [UIScreen mainScreen].scale)];
     [self.view addSubview:tableView];
     
     [[YLDownloadManager sharedInstance] setMaximumConcurrentOperation:1];
@@ -67,42 +61,46 @@ clock_t start;
     FAKFontAwesome *downloadIcon = [FAKFontAwesome downloadIconWithSize:20];
     UIImage *downloadImage = [downloadIcon imageWithSize:CGSizeMake(20, 20)];
     UIBarButtonItem *downloadBarButton = [[UIBarButtonItem alloc] initWithImage:downloadImage
-                                                                       style:UIBarButtonItemStyleDone
-                                                                 actionBlock:^(UIBarButtonItem *downloadBarButton) {
-                                                                     start = clock();
-                                                                     YLog(@".enuquing %@ objects\n", @(self.contents.count));
-                                                                     // 5 operations enqueue and we are limiting only one at a time
-                                                                     for (int i = 0; i < self.contents.count; i ++) {
-                                                                         NSDictionary *info = [self.contents objectAtIndex:i];
-                                                                         NSString *URLStr = [info objectForKey:@"URI"];
-                                                                         // allocate instance
-                                                                         YLWebService *operation = [[YLWebService alloc] initWithURL:[NSURL URLWithString:URLStr]];
-                                                                         // enqueue
-                                                                         [self.optQueue addOperation:operation];
-                                                                     }
-                                                                 }];
+                                                                          style:UIBarButtonItemStyleDone
+                                                                    actionBlock:^(UIBarButtonItem *downloadBarButton) {
+                                                                        start = clock();
+                                                                        YLog(@".enuquing %@ objects\n", @(self.contents.count));
+                                                                        // 5 operations enqueue and we are limiting only one at a time
+                                                                        for (int i = 0; i < self.fileURIs.count; i ++) {
+                                                                            NSDictionary *info = [self.contents objectAtIndex:i];
+                                                                            NSString *URLStr = [info objectForKey:@"URI"];
+                                                                            // allocate instance
+                                                                            YLWebService *operation = [[YLWebService alloc] initWithURL:[NSURL URLWithString:URLStr]];
+                                                                            // enqueue
+                                                                            [self.optQueue addOperation:operation];
+                                                                        }
+                                                                    }];
     UIImage *options = [[FAKFontAwesome gearsIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
     UIBarButtonItem *optionBarButton = [[UIBarButtonItem alloc] initWithImage:options
                                                                         style:UIBarButtonItemStyleDone
                                                                   actionBlock:^(UIBarButtonItem *optionBarButton) {
                                                                       ConfigureViewController *configureVC = [[ConfigureViewController alloc] init];
+                                                                      [configureVC setChangeCallback:^{
+                                                                          [tableView reloadData];
+                                                                      }];
+                                                                      
                                                                       [self.navigationController pushViewController:configureVC animated:YES];
                                                                   }];
     [self.navigationItem setRightBarButtonItems:@[optionBarButton, downloadBarButton]];
     
     UIImage *clearImage = [[FAKFontAwesome eraserIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
     UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:clearImage
-                                     style:UIBarButtonItemStyleDone
-                               actionBlock:^(UIBarButtonItem *leftBarButton) {
-                                   NSString *targetPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-                                   NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:targetPath error:nil];
-                                   [files enumerateObjectsUsingBlock:^(NSString *file, NSUInteger idx, BOOL *stop) {
-                                       // remove each file
-                                       [[NSFileManager defaultManager] removeItemAtPath:[targetPath stringByAppendingPathComponent:file] error:nil];
-                                   }];
-                                   
-                                   [[YLConsoleLogTextView sharedInstance] clearConsoleScreen];
-                               }];
+                                                                      style:UIBarButtonItemStyleDone
+                                                                actionBlock:^(UIBarButtonItem *leftBarButton) {
+                                                                    NSString *targetPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+                                                                    NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:targetPath error:nil];
+                                                                    [files enumerateObjectsUsingBlock:^(NSString *file, NSUInteger idx, BOOL *stop) {
+                                                                        // remove each file
+                                                                        [[NSFileManager defaultManager] removeItemAtPath:[targetPath stringByAppendingPathComponent:file] error:nil];
+                                                                    }];
+                                                                    
+                                                                    [[YLConsoleLogTextView sharedInstance] clearConsoleScreen];
+                                                                }];
     
     [self.navigationItem setLeftBarButtonItem:leftBarButton];
 }
@@ -122,30 +120,96 @@ clock_t start;
     }
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    UILabel *headerLabel = [[UILabel alloc] init];
-    [headerLabel setFont:[UIFont systemFontOfSize:15]];
-    [headerLabel setText:[NSString stringWithFormat:@"Max Concurrent Operation"]];
-    [headerLabel sizeToFit];
+    return 30.f;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat rowHeight = HEADER_PANEL_HEIGHT;
+    if (indexPath.section == INFO) {
+        rowHeight = 35.f;
+    }
     
-    return headerLabel;
+    return rowHeight;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSDictionary *info = [self.contents objectAtIndex:section];
+    NSString *subContentStr = [info objectForKey:@"sectionStr"];
+    
+    return subContentStr;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return self.contents.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return MAX_CONCURRENT_RUNNING_QUEUE;
+    NSDictionary *info = [self.contents objectAtIndex:section];
+    NSInteger numOfRows = [[info objectForKey:@"rowTitleStrs"] count];
+    
+    return numOfRows;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSInteger maxConcurrent = [self.optQueue maxConcurrentOperationCount] -1;
-    [cell.textLabel setText:[NSString stringWithFormat:@"%@", @(indexPath.row + 1)]];
+    [cell.textLabel setFont:[UIFont systemFontOfSize:13.f]];
+    [cell.detailTextLabel setFont:[UIFont systemFontOfSize:13.f]];
     
-    if (maxConcurrent == indexPath.row)
-        [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
-    else
-        [cell setAccessoryType:UITableViewCellAccessoryNone];
+    NSDictionary *info = [self.contents objectAtIndex:indexPath.section];
+    NSString *rowTitleStr = [[info objectForKey:@"rowTitleStrs"] objectAtIndex:indexPath.row];
+    [cell.textLabel setText:rowTitleStr];
+    
+    NSString *detailStr = @"";
+    
+    if (indexPath.section == CONSOLE) {
+        CGRect consoleFrame = cell.bounds;
+        consoleFrame.size.height = HEADER_PANEL_HEIGHT;
+        UITextView *textView = [[UITextView alloc] initWithFrame:consoleFrame];
+        [textView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
+        [textView setBackgroundColor:RGB(255, 252, 229)];
+        [textView setFont:[UIFont fontWithName:@"Menlo-Bold" size:9.f]];
+        [textView setEditable:NO];
+        
+        [[YLConsoleLogTextView sharedInstance] attachTextView:textView];
+        [cell.contentView addSubview:textView];
+    }
+    else if (indexPath.section == INFO) {
+        switch (indexPath.row) {
+            case METHODS:
+                detailStr = [self defaultMethodTranslation:[[YLSaveUserDefault sharedInstance] getDefaultMethod]];
+                break;
+            case NUM_OF_MAX_CONCURRENT:
+                detailStr = [NSString stringWithFormat:@"%@", @([[[YLSaveUserDefault sharedInstance] getDefaultConCurNum] integerValue] + 1)];
+                break;
+        }
+        
+        [cell.detailTextLabel setText:detailStr];
+    }
+}
+
+- (NSString *)defaultMethodTranslation:(NSNumber *)selectedMethod
+{
+    NSString *methodStr = @"";
+    NSInteger selected = [selectedMethod integerValue];
+    switch (selected) {
+        case URLConnection:
+            methodStr = @"NSURLConnection";
+            break;
+        case URLSession:
+            methodStr = @"NSURLSession";
+            break;
+        case AFNetworking_2:
+            methodStr = @"AFNetworking";
+            break;
+    }
+    
+    return methodStr;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -154,7 +218,7 @@ clock_t start;
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:YLDownloadTableViewCellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:YLDownloadTableViewCellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:YLDownloadTableViewCellIdentifier];
     }
     
     return cell;
@@ -162,8 +226,6 @@ clock_t start;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.optQueue setMaxConcurrentOperationCount:indexPath.row + 1];
-    [tableView reloadData];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 

@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+typedef NS_OPTIONS(NSInteger, DEFAULT_LOAD_OPTIONS) {
+    METHODS = 0,
+    NUM_OF_MAX_CONCURRENT,
+};
 
 @interface ConfigureViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
-
+typedef void (^ConfigurationBlock) (void);
+@property (nonatomic, copy) ConfigurationBlock changeCallback;
 @end

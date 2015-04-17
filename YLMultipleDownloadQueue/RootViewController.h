@@ -8,13 +8,28 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, METHODS_KINDS) {
+    URLConnection = 0,
+    URLSession,
+    AFNetworking_2,
+};
+
+typedef NS_ENUM(NSInteger, SECTIONS) {
+    CONSOLE = 0,
+    INFO,
+};
+
 @interface RootViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {
     NSArray *contents;
+    
     NSOperationQueue *optQueue;
 }
 
 @property (nonatomic, strong) NSArray *contents;
+@property (nonatomic, strong) NSArray *fileURIs;
 @property (nonatomic, strong) NSOperationQueue *optQueue;
+
+- (NSString *)defaultMethodTranslation:(NSNumber *)selectedMethod;
 
 @end
