@@ -158,8 +158,8 @@ clock_t start;
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [cell.textLabel setFont:[UIFont systemFontOfSize:13.f]];
-    [cell.detailTextLabel setFont:[UIFont systemFontOfSize:13.f]];
+    [cell.textLabel setFont:[UIFont systemFontOfSize:14.f]];
+    [cell.detailTextLabel setFont:[UIFont systemFontOfSize:14.f]];
     
     NSDictionary *info = [self.contents objectAtIndex:indexPath.section];
     NSString *rowTitleStr = [[info objectForKey:@"rowTitleStrs"] objectAtIndex:indexPath.row];

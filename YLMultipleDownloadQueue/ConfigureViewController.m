@@ -63,6 +63,9 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [cell.textLabel setFont:[UIFont systemFontOfSize:14.f]];
+    [cell.detailTextLabel setFont:[UIFont systemFontOfSize:14.f]];
+    
     NSInteger selected = -1;
     
     switch (indexPath.section) {
