@@ -10,6 +10,7 @@
 #import "YLDownloadManager.h"
 #import "YLWebService.h"
 #import "UIBarButtonItem+Category.h"
+#import "ConfigureViewController.h"
 #import <FontAwesomeKit/FontAwesomeKit.h>
 #define HEADER_PANEL_HEIGHT             220.f
 #define MAX_CONCURRENT_RUNNING_QUEUE    5
@@ -65,10 +66,11 @@ clock_t start;
     
     FAKFontAwesome *downloadIcon = [FAKFontAwesome downloadIconWithSize:20];
     UIImage *downloadImage = [downloadIcon imageWithSize:CGSizeMake(20, 20)];
-    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithImage:downloadImage
+    UIBarButtonItem *downloadBarButton = [[UIBarButtonItem alloc] initWithImage:downloadImage
                                                                        style:UIBarButtonItemStyleDone
-                                                                 actionBlock:^(UIBarButtonItem *rightBarButton) {
+                                                                 actionBlock:^(UIBarButtonItem *downloadBarButton) {
                                                                      start = clock();
+                                                                     YLog(@".enuquing %@ objects\n", @(self.contents.count));
                                                                      // 5 operations enqueue and we are limiting only one at a time
                                                                      for (int i = 0; i < self.contents.count; i ++) {
                                                                          NSDictionary *info = [self.contents objectAtIndex:i];
@@ -79,7 +81,14 @@ clock_t start;
                                                                          [self.optQueue addOperation:operation];
                                                                      }
                                                                  }];
-    [self.navigationItem setRightBarButtonItem:rightBarButton];
+    UIImage *options = [[FAKFontAwesome gearsIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+    UIBarButtonItem *optionBarButton = [[UIBarButtonItem alloc] initWithImage:options
+                                                                        style:UIBarButtonItemStyleDone
+                                                                  actionBlock:^(UIBarButtonItem *optionBarButton) {
+                                                                      ConfigureViewController *configureVC = [[ConfigureViewController alloc] init];
+                                                                      [self.navigationController pushViewController:configureVC animated:YES];
+                                                                  }];
+    [self.navigationItem setRightBarButtonItems:@[optionBarButton, downloadBarButton]];
     
     UIImage *clearImage = [[FAKFontAwesome eraserIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
     UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:clearImage

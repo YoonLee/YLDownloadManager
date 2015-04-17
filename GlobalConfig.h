@@ -3,7 +3,7 @@
 //  blackcloset
 //
 //  Created by Yoon Lee on 4/23/14.
-//  Copyright (c) 2014 BrandBoom. All rights reserved.
+//  Copyright (c) 2014 Yoon Lee. All rights reserved.
 //
 // PRE-COMPILE HELPER HEADER METHODS
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>sectionTitleStr</key>
+		<string>Method</string>
+		<key>rowTitleStrs</key>
+		<array>
+			<string>NSURLConnection</string>
+			<string>NSURLSession (iOS 7.0 +)</string>
+			<string>AFNetworking</string>
+		</array>
+	</dict>
+	<dict>
+		<key>sectionTitleStr</key>
+		<string>Maximum Concurrent</string>
+		<key>rowTitleStrs</key>
+		<array>
+			<string>1</string>
+			<string>2</string>
+			<string>3</string>
+			<string>4</string>
+			<string>5</string>
+		</array>
+	</dict>
+	<dict>
+		<key>sectionTitleStr</key>
+		<string>Version</string>
+		<key>rowTitleStrs</key>
+		<array>
+			<string>1.0.0</string>
+		</array>
+	</dict>
+</array>
+</plist>
