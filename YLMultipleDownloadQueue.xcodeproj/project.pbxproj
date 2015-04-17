@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6B0FCC0A1AE18DE300D7B1DF /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 6B0FCC091AE18DE300D7B1DF /* Podfile */; };
 		6B4F32EB1ADF0BDB0062F7F4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F32EA1ADF0BDB0062F7F4 /* main.m */; };
 		6B4F32EE1ADF0BDB0062F7F4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F32ED1ADF0BDB0062F7F4 /* AppDelegate.m */; };
 		6B4F32F61ADF0BDB0062F7F4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F32F51ADF0BDB0062F7F4 /* Images.xcassets */; };
@@ -24,6 +25,7 @@
 /* Begin PBXFileReference section */
 		5F93D5644D2CCE4F8F17D43E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		68574E2011F315D68C215422 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		6B0FCC091AE18DE300D7B1DF /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		6B4F32E51ADF0BDB0062F7F4 /* YLMultipleDownloadQueue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YLMultipleDownloadQueue.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B4F32E91ADF0BDB0062F7F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6B4F32EA1ADF0BDB0062F7F4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -32,7 +34,7 @@
 		6B4F32F51ADF0BDB0062F7F4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		6B53C6421ADF0EAC00153E95 /* YLDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YLDownloadManager.h; sourceTree = "<group>"; };
 		6B53C6431ADF0EAC00153E95 /* YLDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YLDownloadManager.m; sourceTree = "<group>"; };
-		6B53C6451ADF0F4600153E95 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		6B53C6451ADF0F4600153E95 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		6B53C6471ADF1CB600153E95 /* GlobalConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalConfig.h; sourceTree = "<group>"; };
 		6B53C6481ADF1D4500153E95 /* YLMultipleDownloadQueue.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YLMultipleDownloadQueue.pch; sourceTree = "<group>"; };
 		6B53C64B1ADF292400153E95 /* UIBarButtonItem+Category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBarButtonItem+Category.h"; sourceTree = "<group>"; };
@@ -81,8 +83,8 @@
 		6B4F32DC1ADF0BDB0062F7F4 = {
 			isa = PBXGroup;
 			children = (
-				6B53C6451ADF0F4600153E95 /* Default-568h@2x.png */,
 				6B53C6471ADF1CB600153E95 /* GlobalConfig.h */,
+				6B0FCC091AE18DE300D7B1DF /* Podfile */,
 				6B4F32E71ADF0BDB0062F7F4 /* YLMultipleDownloadQueue */,
 				6B4F32E61ADF0BDB0062F7F4 /* Products */,
 				699BA2EA7B682BA73A7A5C05 /* Pods */,
@@ -118,6 +120,7 @@
 		6B4F32E81ADF0BDB0062F7F4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				6B53C6451ADF0F4600153E95 /* Default-568h@2x.png */,
 				6B4F32E91ADF0BDB0062F7F4 /* Info.plist */,
 				6BC5F05B1ADF0DAD00ABC032 /* DownloadList.plist */,
 				6B4F32EA1ADF0BDB0062F7F4 /* main.m */,
@@ -225,6 +228,7 @@
 			files = (
 				6BC5F05C1ADF0DAD00ABC032 /* DownloadList.plist in Resources */,
 				6B4F32F61ADF0BDB0062F7F4 /* Images.xcassets in Resources */,
+				6B0FCC0A1AE18DE300D7B1DF /* Podfile in Resources */,
 				6B53C6461ADF0F4600153E95 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

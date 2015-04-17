@@ -39,7 +39,14 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.entireConsoleLog appendString:consoleLogStr];
         [self.consoleTextView setText:self.entireConsoleLog];
+        [self.consoleTextView scrollRangeToVisible:NSMakeRange(self.consoleTextView.text.length, 0)];
     });
+}
+
+- (void)clearConsoleScreen
+{
+    [self.entireConsoleLog setString:@""];
+    [self.consoleTextView setText:@".cleared"];
 }
 
 @end

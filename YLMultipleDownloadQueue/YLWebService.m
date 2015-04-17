@@ -17,7 +17,6 @@
 }
 
 @property (nonatomic, strong) NSURL *URL;
-@property (nonatomic, copy) NSString *identityStr;
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, strong) NSMutableData *collectingData;
 
@@ -27,15 +26,13 @@
 
 @implementation YLWebService
 @synthesize URL;
-@synthesize identityStr;
 @synthesize collectingData;
 @synthesize fileName;
 
-- (instancetype)initWithURL:(NSURL *)qURL identity:(NSString *)qIdentityStr
+- (instancetype)initWithURL:(NSURL *)qURL
 {
     if (self = [super init]) {
         URL = qURL;
-        self.identityStr = qIdentityStr;
     }
     
     return self;
@@ -46,7 +43,6 @@
     if( [self isFinished] || [self isCancelled] ) { [self downloadCompleted]; return; }
     [self setExecuting:YES];
     
-    YLog(@".operation: %@ <running>\n", self.identityStr);
     collectingData = [[NSMutableData alloc] init];
     NSURLRequest *request = [NSURLRequest requestWithURL:self.URL];
     NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request
@@ -100,20 +96,21 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    YLog(@".operation: %@ <error>\n", self.identityStr);
+    YLog(@".operation: `%@` <error>\n", self.fileName);
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    YLog(@".operation: %@ <response received>\n", self.identityStr);
     fileName = response.suggestedFilename;
+    YLog(@".operation: `%@` <response received>\n", self.fileName);
 }
+
+static dispatch_once_t excuteOnceToken;
 
 -(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    static dispatch_once_t excuteOnceToken;
     dispatch_once(&excuteOnceToken, ^{
-        YLog(@".operation: %@ <downloading>\n", self.identityStr);
+        YLog(@".operation: `%@` <downloading>\n", self.fileName);
     });
     
     [collectingData appendData:data];
@@ -121,12 +118,12 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    YLog(@".operation: %@ <finished>\n", self.identityStr);
+    YLog(@".operation: `%@` <finished>\n", self.fileName);
     NSString *targetPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSURL *targetURL = [NSURL fileURLWithPath:[targetPath stringByAppendingPathComponent:fileName]];
     CLog(@".downloaded at %@", targetURL.relativePath);
-    CLog(@"1)copy the link\n2)go to terminal->cd [directory path]\n3)type open .\n\n");
     [collectingData writeToURL:targetURL atomically:YES];
+    excuteOnceToken = 0;
     [self downloadCompleted];
 }
 

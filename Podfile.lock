@@ -20,11 +20,28 @@ PODS:
   - AFNetworking/UIKit (2.5.2):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - FontAwesomeKit (2.1.8):
+    - FontAwesomeKit/Core (= 2.1.8)
+    - FontAwesomeKit/FontAwesome (= 2.1.8)
+    - FontAwesomeKit/FoundationIcons (= 2.1.8)
+    - FontAwesomeKit/IonIcons (= 2.1.8)
+    - FontAwesomeKit/Zocial (= 2.1.8)
+  - FontAwesomeKit/Core (2.1.8)
+  - FontAwesomeKit/FontAwesome (2.1.8):
+    - FontAwesomeKit/Core
+  - FontAwesomeKit/FoundationIcons (2.1.8):
+    - FontAwesomeKit/Core
+  - FontAwesomeKit/IonIcons (2.1.8):
+    - FontAwesomeKit/Core
+  - FontAwesomeKit/Zocial (2.1.8):
+    - FontAwesomeKit/Core
 
 DEPENDENCIES:
   - AFNetworking
+  - FontAwesomeKit (~> 2.1.0)
 
 SPEC CHECKSUMS:
   AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36
+  FontAwesomeKit: 64759fb28b5d2e74a1bd81553d7c11ca10e32179
 
 COCOAPODS: 0.36.3

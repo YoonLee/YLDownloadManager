@@ -13,4 +13,5 @@
 
 - (void)attachTextView:(UITextView *)textView;
 - (void)appendConsoleLog:(NSString *)consoleLogStr;
+- (void)clearConsoleScreen;
 @end

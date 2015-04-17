@@ -10,12 +10,15 @@
 #import "YLDownloadManager.h"
 #import "YLWebService.h"
 #import "UIBarButtonItem+Category.h"
+#import <FontAwesomeKit/FontAwesomeKit.h>
 #define HEADER_PANEL_HEIGHT             220.f
 #define MAX_CONCURRENT_RUNNING_QUEUE    5
 
 @implementation RootViewController
 @synthesize contents;
 @synthesize optQueue;
+
+clock_t start;
 
 - (void)viewDidLoad
 {
@@ -30,6 +33,11 @@
     
     optQueue = [[NSOperationQueue alloc] init];
     [optQueue setMaxConcurrentOperationCount:1];
+    // KVO
+    [optQueue addObserver:self
+               forKeyPath:@"operations"
+                  options:NSKeyValueObservingOptionNew
+                  context:NULL];
     
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"DownloadList" ofType:@"plist"];
     contents = [[NSArray alloc] initWithContentsOfFile:filePath];
@@ -39,7 +47,9 @@
     
     UITextView *textView = [[UITextView alloc] initWithFrame:headerFrame];
     [textView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
-    [textView setBackgroundColor:RGB(237, 240, 214)];
+    [textView setBackgroundColor:RGB(255, 252, 229)];
+    [textView setFont:[UIFont fontWithName:@"Menlo-Bold" size:9.f]];
+    [textView setEditable:NO];
 
     [[YLConsoleLogTextView sharedInstance] attachTextView:textView];
     
@@ -53,34 +63,54 @@
     
     [[YLDownloadManager sharedInstance] setMaximumConcurrentOperation:1];
     
-    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithTitle:@"AFNetwork"
+    FAKFontAwesome *downloadIcon = [FAKFontAwesome downloadIconWithSize:20];
+    UIImage *downloadImage = [downloadIcon imageWithSize:CGSizeMake(20, 20)];
+    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithImage:downloadImage
                                                                        style:UIBarButtonItemStyleDone
                                                                  actionBlock:^(UIBarButtonItem *rightBarButton) {
-                                                                     // loop test
-                                                                     [self.contents enumerateObjectsUsingBlock:^(NSDictionary *info, NSUInteger idx, BOOL *stop) {
+                                                                     start = clock();
+                                                                     // 5 operations enqueue and we are limiting only one at a time
+                                                                     for (int i = 0; i < self.contents.count; i ++) {
+                                                                         NSDictionary *info = [self.contents objectAtIndex:i];
                                                                          NSString *URLStr = [info objectForKey:@"URI"];
-                                                                         NSURL *URL = [NSURL URLWithString:URLStr];
-                                                                         [[YLDownloadManager sharedInstance] addDownloadTaskFrom:URL];
-                                                                     }];
+                                                                         // allocate instance
+                                                                         YLWebService *operation = [[YLWebService alloc] initWithURL:[NSURL URLWithString:URLStr]];
+                                                                         // enqueue
+                                                                         [self.optQueue addOperation:operation];
+                                                                     }
                                                                  }];
     [self.navigationItem setRightBarButtonItem:rightBarButton];
     
-    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Generic"
-                                                                      style:UIBarButtonItemStyleDone
-                                                                actionBlock:^(UIBarButtonItem *leftBarButton) {
-                                                                    CLog(@".calling custom webservices");
-                                                                    NSArray *identity = @[@"A", @"B", @"C", @"D", @"E", @"F", @"G", @"H"];
-                                                                    // 5 operations enqueue and we are limiting only one at a time
-                                                                    for (int i = 0; i < self.contents.count; i ++) {
-                                                                        NSDictionary *info = [self.contents objectAtIndex:i];
-                                                                        NSString *URLStr = [info objectForKey:@"URI"];
-                                                                        // allocate instance
-                                                                        YLWebService *operation = [[YLWebService alloc] initWithURL:[NSURL URLWithString:URLStr] identity:identity[i]];
-                                                                        // enqueue
-                                                                        [self.optQueue addOperation:operation];
-                                                                    }
-                                                                }];
+    UIImage *clearImage = [[FAKFontAwesome eraserIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:clearImage
+                                     style:UIBarButtonItemStyleDone
+                               actionBlock:^(UIBarButtonItem *leftBarButton) {
+                                   NSString *targetPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+                                   NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:targetPath error:nil];
+                                   [files enumerateObjectsUsingBlock:^(NSString *file, NSUInteger idx, BOOL *stop) {
+                                       // remove each file
+                                       [[NSFileManager defaultManager] removeItemAtPath:[targetPath stringByAppendingPathComponent:file] error:nil];
+                                   }];
+                                   
+                                   [[YLConsoleLogTextView sharedInstance] clearConsoleScreen];
+                               }];
+    
     [self.navigationItem setLeftBarButtonItem:leftBarButton];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"operations"]) {
+        NSOperationQueue *queue = (NSOperationQueue *)object;
+        NSUInteger numOfOperations = [queue operationCount];
+        if (numOfOperations == 0) {
+            clock_t finish = clock();
+            NSString *targetPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+            YLog(@"\n.download completed!\n.time took at %@ secs", @(getEstimateTime(start, finish)));
+            YLog(@"\n.num of max concurrent used = %@\n", @(self.optQueue.maxConcurrentOperationCount));
+            YLog(@"LINK: %@\n\nINSTRUCTIONS\n1)copy the link\n2)go to terminal->cd [directory path]\n3)type open .\n\n", targetPath);
+        }
+    }
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
