@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong) NSURL *URL;
 @property (nonatomic, copy) NSString *identityStr;
+@property (nonatomic, copy) NSString *fileName;
+@property (nonatomic, strong) NSMutableData *collectingData;
 
 - (void)downloadCompleted;
 
@@ -26,17 +28,17 @@
 @implementation YLWebService
 @synthesize URL;
 @synthesize identityStr;
+@synthesize collectingData;
+@synthesize fileName;
 
-- (void)main
+- (instancetype)initWithURL:(NSURL *)qURL identity:(NSString *)qIdentityStr
 {
-    DLog(@".name: %@", self.identityStr);
+    if (self = [super init]) {
+        URL = qURL;
+        self.identityStr = qIdentityStr;
+    }
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:self.URL];
-    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request
-                                                                  delegate:self
-                                                          startImmediately:NO];
-    [connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    [connection start];
+    return self;
 }
 
 - (void)start
@@ -44,7 +46,14 @@
     if( [self isFinished] || [self isCancelled] ) { [self downloadCompleted]; return; }
     [self setExecuting:YES];
     
-    [self main];
+    YLog(@".operation: %@ <running>\n", self.identityStr);
+    collectingData = [[NSMutableData alloc] init];
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.URL];
+    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request
+                                                                  delegate:self
+                                                          startImmediately:NO];
+    [connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    [connection start];
 }
 
 #pragma marks - NSOperation Overrides
@@ -84,16 +93,6 @@
     [self setFinished:YES];
 }
 
-- (instancetype)initWithURL:(NSURL *)qURL identity:(NSString *)qIdentityStr
-{
-    if (self = [super init]) {
-        URL = qURL;
-        self.identityStr = qIdentityStr;
-    }
-    
-    return self;
-}
-
 - (BOOL)isConcurrent
 {
     return YES;
@@ -101,22 +100,33 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    DLog(@"name: %@", self.identityStr);
+    YLog(@".operation: %@ <error>\n", self.identityStr);
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    DLog(@"name: %@", self.identityStr);
+    YLog(@".operation: %@ <response received>\n", self.identityStr);
+    fileName = response.suggestedFilename;
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+-(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    DLog(@"name: %@", self.identityStr);
+    static dispatch_once_t excuteOnceToken;
+    dispatch_once(&excuteOnceToken, ^{
+        YLog(@".operation: %@ <downloading>\n", self.identityStr);
+    });
+    
+    [collectingData appendData:data];
 }
 
-- (void)connectionDidFinishDownloading:(NSURLConnection *)connection destinationURL:(NSURL *) destinationURL
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    DLog(@"name: %@", self.identityStr);
+    YLog(@".operation: %@ <finished>\n", self.identityStr);
+    NSString *targetPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSURL *targetURL = [NSURL fileURLWithPath:[targetPath stringByAppendingPathComponent:fileName]];
+    CLog(@".downloaded at %@", targetURL.relativePath);
+    CLog(@"1)copy the link\n2)go to terminal->cd [directory path]\n3)type open .\n\n");
+    [collectingData writeToURL:targetURL atomically:YES];
     [self downloadCompleted];
 }
 

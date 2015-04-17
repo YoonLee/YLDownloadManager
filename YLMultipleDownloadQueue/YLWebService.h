@@ -8,6 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface YLWebService : NSOperation
+@interface YLWebService : NSOperation <NSURLConnectionDataDelegate>
 - (instancetype)initWithURL:(NSURL *)qURL identity:(NSString *)qIdentityStr;
 @end

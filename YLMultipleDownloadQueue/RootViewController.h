@@ -11,7 +11,6 @@
 @interface RootViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {
     NSArray *contents;
-    
     NSOperationQueue *optQueue;
 }
 

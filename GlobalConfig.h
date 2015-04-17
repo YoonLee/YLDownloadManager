@@ -9,6 +9,8 @@
 
 /* -fno-objc-arc -> from nonARC to ARC project */
 /* -fobjc-arc    -> from ARC    to nonARC project */
+#import "YLConsoleLogTextView.h"
+
 #define KILL_OBJ(x)             x = nil;    [x release];
 
 #define CLog(FORMAT, ...) printf("%s\n", [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String]);
@@ -20,6 +22,8 @@
 #else
 #   define DLog(...)
 #endif
+
+#define YLog(FORMAT, ...) [[YLConsoleLogTextView sharedInstance] appendConsoleLog:[NSString stringWithFormat:FORMAT, ##__VA_ARGS__]];
 
 #define RADIANS_TO_DEGREES(radians) ((radians) * (180.0 / M_PI))
 #define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * M_PI)
