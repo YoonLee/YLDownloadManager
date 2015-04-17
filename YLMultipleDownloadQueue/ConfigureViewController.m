@@ -109,11 +109,11 @@
     switch (indexPath.section) {
         case METHODS:
             [[YLSaveUserDefault sharedInstance] setDefaultMethod:@(indexPath.row)];
-            if (self.changeCallback) { self.changeCallback(); }
+            if (self.changeCallback) { self.changeCallback(indexPath); }
             break;
         case NUM_OF_MAX_CONCURRENT:
             [[YLSaveUserDefault sharedInstance] setDefaultConCurNum:@(indexPath.row)];
-            if (self.changeCallback) { self.changeCallback(); }
+            if (self.changeCallback) { self.changeCallback(indexPath); }
             break;
         default:
             break;

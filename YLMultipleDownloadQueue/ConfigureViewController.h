@@ -13,6 +13,6 @@ typedef NS_OPTIONS(NSInteger, DEFAULT_LOAD_OPTIONS) {
 };
 
 @interface ConfigureViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
-typedef void (^ConfigurationBlock) (void);
+typedef void (^ConfigurationBlock) (NSIndexPath *indexPath);
 @property (nonatomic, copy) ConfigurationBlock changeCallback;
 @end

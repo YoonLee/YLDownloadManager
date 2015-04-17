@@ -34,7 +34,9 @@ clock_t start;
     [self setTitle:@"Queue Manager"];
     
     optQueue = [[NSOperationQueue alloc] init];
-    [optQueue setMaxConcurrentOperationCount:1];
+    NSInteger defaultConcurrentNum = [[[YLSaveUserDefault sharedInstance] getDefaultConCurNum] integerValue] + 1;
+    [optQueue setMaxConcurrentOperationCount:defaultConcurrentNum];
+    
     // KVO
     [optQueue addObserver:self
                forKeyPath:@"operations"
@@ -64,10 +66,10 @@ clock_t start;
                                                                           style:UIBarButtonItemStyleDone
                                                                     actionBlock:^(UIBarButtonItem *downloadBarButton) {
                                                                         start = clock();
-                                                                        YLog(@".enuquing %@ objects\n", @(self.contents.count));
-                                                                        // 5 operations enqueue and we are limiting only one at a time
+                                                                        YLog(@".enuquing %@ objects\n", @(self.fileURIs.count));
+                                                                        
                                                                         for (int i = 0; i < self.fileURIs.count; i ++) {
-                                                                            NSDictionary *info = [self.contents objectAtIndex:i];
+                                                                            NSDictionary *info = [self.fileURIs objectAtIndex:i];
                                                                             NSString *URLStr = [info objectForKey:@"URI"];
                                                                             // allocate instance
                                                                             YLWebService *operation = [[YLWebService alloc] initWithURL:[NSURL URLWithString:URLStr]];
@@ -80,7 +82,18 @@ clock_t start;
                                                                         style:UIBarButtonItemStyleDone
                                                                   actionBlock:^(UIBarButtonItem *optionBarButton) {
                                                                       ConfigureViewController *configureVC = [[ConfigureViewController alloc] init];
-                                                                      [configureVC setChangeCallback:^{
+                                                                      [configureVC setChangeCallback:^(NSIndexPath *indexPath) {
+                                                                          switch (indexPath.section) {
+                                                                              case METHODS:
+                                                                                  
+                                                                                  break;
+                                                                              case NUM_OF_MAX_CONCURRENT: {
+                                                                                  NSInteger defaultConcurrentNum = [[[YLSaveUserDefault sharedInstance] getDefaultConCurNum] integerValue];
+                                                                                  [optQueue setMaxConcurrentOperationCount:defaultConcurrentNum];
+                                                                                  break;
+                                                                              }
+                                                                          }
+                                                                          
                                                                           [tableView reloadData];
                                                                       }];
                                                                       
