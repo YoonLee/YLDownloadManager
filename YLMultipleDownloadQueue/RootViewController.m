@@ -11,6 +11,7 @@
 #import "YLURLConnectionOperation.h"
 #import "YLURLSessionOperation.h"
 #import "YLSaveUserDefault.h"
+#import "YLAFNetworkingOperation.h"
 #import "UIBarButtonItem+Category.h"
 #import "ConfigureViewController.h"
 #import <FontAwesomeKit/FontAwesomeKit.h>
@@ -19,6 +20,7 @@
 @implementation RootViewController
 @synthesize contents;
 @synthesize fileURIs;
+@synthesize typeOfOperations;
 @synthesize optQueue;
 
 clock_t start;
@@ -36,7 +38,9 @@ clock_t start;
     
     optQueue = [[NSOperationQueue alloc] init];
     NSInteger defaultConcurrentNum = [[[YLSaveUserDefault sharedInstance] getDefaultConCurNum] integerValue] + 1;
-    [optQueue setMaxConcurrentOperationCount:defaultConcurrentNum];
+    [self.optQueue setMaxConcurrentOperationCount:defaultConcurrentNum];
+    
+    typeOfOperations = @[[YLURLConnectionOperation class], [YLURLSessionOperation class], [YLAFNetworkingOperation class]];
     
     // KVO
     [optQueue addObserver:self
@@ -59,8 +63,6 @@ clock_t start;
     [tableView setSectionFooterHeight:(1.f / [UIScreen mainScreen].scale)];
     [self.view addSubview:tableView];
     
-    [[YLDownloadManager sharedInstance] setMaximumConcurrentOperation:1];
-    
     FAKFontAwesome *downloadIcon = [FAKFontAwesome downloadIconWithSize:20];
     UIImage *downloadImage = [downloadIcon imageWithSize:CGSizeMake(20, 20)];
     UIBarButtonItem *downloadBarButton = [[UIBarButtonItem alloc] initWithImage:downloadImage
@@ -68,12 +70,15 @@ clock_t start;
                                                                     actionBlock:^(UIBarButtonItem *downloadBarButton) {
                                                                         start = clock();
                                                                         YLog(@".enuquing %@ operation(s)\n", @(self.fileURIs.count));
-                                                                        
+                                                                        NSInteger selected = [[[YLSaveUserDefault sharedInstance] getDefaultMethod] integerValue];
+                                                                        NSString *nameOfOperationClass = NSStringFromClass(self.typeOfOperations[selected]);
+
                                                                         for (int i = 0; i < self.fileURIs.count; i ++) {
                                                                             NSDictionary *info = [self.fileURIs objectAtIndex:i];
                                                                             NSString *URLStr = [info objectForKey:@"URI"];
                                                                             // allocate instance
-                                                                            YLURLConnectionOperation *operation = [[YLURLConnectionOperation alloc] initWithURL:[NSURL URLWithString:URLStr]];
+                                                                            Class class = NSClassFromString(nameOfOperationClass);
+                                                                            YLOperation *operation = [(YLOperation *)[class alloc] initWithURL:[NSURL URLWithString:URLStr]];
                                                                             // enqueue
                                                                             [self.optQueue addOperation:operation];
                                                                         }
@@ -89,7 +94,7 @@ clock_t start;
                                                                                   
                                                                                   break;
                                                                               case NUM_OF_MAX_CONCURRENT: {
-                                                                                  NSInteger defaultConcurrentNum = [[[YLSaveUserDefault sharedInstance] getDefaultConCurNum] integerValue];
+                                                                                  NSInteger defaultConcurrentNum = [[[YLSaveUserDefault sharedInstance] getDefaultConCurNum] integerValue] + 1;
                                                                                   [optQueue setMaxConcurrentOperationCount:defaultConcurrentNum];
                                                                                   break;
                                                                               }

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "YLOperation.h"
 
-@interface YLURLSessionOperation : YLOperation <NSURLConnectionDataDelegate>
+@class YLOperation;
+@interface YLURLSessionOperation : YLOperation <NSURLSessionDelegate>
 
 @end

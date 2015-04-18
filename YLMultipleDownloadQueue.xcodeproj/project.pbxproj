@@ -22,7 +22,7 @@
 		6B83265A1AE1B85F00A41D5D /* YLSaveUserDefault.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B8326591AE1B85F00A41D5D /* YLSaveUserDefault.m */; };
 		6B83265D1AE1BB0000A41D5D /* NSString+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B83265C1AE1BB0000A41D5D /* NSString+Category.m */; };
 		6B8326631AE1C23100A41D5D /* RootDisplay.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B8326621AE1C23100A41D5D /* RootDisplay.plist */; };
-		6B8326691AE1D2CA00A41D5D /* NSAFNetworkingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B8326681AE1D2CA00A41D5D /* NSAFNetworkingOperation.m */; };
+		6B8326691AE1D2CA00A41D5D /* YLAFNetworkingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B8326681AE1D2CA00A41D5D /* YLAFNetworkingOperation.m */; };
 		6B83266C1AE1D2DE00A41D5D /* YLURLSessionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B83266B1AE1D2DE00A41D5D /* YLURLSessionOperation.m */; };
 		6B83266F1AE1D2EA00A41D5D /* YLOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B83266E1AE1D2EA00A41D5D /* YLOperation.m */; };
 		6BC5F05A1ADF0C9F00ABC032 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC5F0591ADF0C9F00ABC032 /* RootViewController.m */; };
@@ -61,8 +61,8 @@
 		6B83265B1AE1BB0000A41D5D /* NSString+Category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Category.h"; sourceTree = "<group>"; };
 		6B83265C1AE1BB0000A41D5D /* NSString+Category.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Category.m"; sourceTree = "<group>"; };
 		6B8326621AE1C23100A41D5D /* RootDisplay.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RootDisplay.plist; sourceTree = "<group>"; };
-		6B8326671AE1D2CA00A41D5D /* NSAFNetworkingOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSAFNetworkingOperation.h; sourceTree = "<group>"; };
-		6B8326681AE1D2CA00A41D5D /* NSAFNetworkingOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSAFNetworkingOperation.m; sourceTree = "<group>"; };
+		6B8326671AE1D2CA00A41D5D /* YLAFNetworkingOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YLAFNetworkingOperation.h; sourceTree = "<group>"; };
+		6B8326681AE1D2CA00A41D5D /* YLAFNetworkingOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YLAFNetworkingOperation.m; sourceTree = "<group>"; };
 		6B83266A1AE1D2DE00A41D5D /* YLURLSessionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YLURLSessionOperation.h; sourceTree = "<group>"; };
 		6B83266B1AE1D2DE00A41D5D /* YLURLSessionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YLURLSessionOperation.m; sourceTree = "<group>"; };
 		6B83266D1AE1D2EA00A41D5D /* YLOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YLOperation.h; sourceTree = "<group>"; };
@@ -182,12 +182,7 @@
 			children = (
 				6B83266D1AE1D2EA00A41D5D /* YLOperation.h */,
 				6B83266E1AE1D2EA00A41D5D /* YLOperation.m */,
-				6B74D87C1AE037BF00759940 /* YLURLConnectionOperation.h */,
-				6B74D87F1AE07E2200759940 /* YLURLConnectionOperation.m */,
-				6B83266A1AE1D2DE00A41D5D /* YLURLSessionOperation.h */,
-				6B83266B1AE1D2DE00A41D5D /* YLURLSessionOperation.m */,
-				6B8326671AE1D2CA00A41D5D /* NSAFNetworkingOperation.h */,
-				6B8326681AE1D2CA00A41D5D /* NSAFNetworkingOperation.m */,
+				6B8326701AE1D78C00A41D5D /* Subclasses */,
 			);
 			name = Operations;
 			sourceTree = "<group>";
@@ -201,6 +196,19 @@
 				6B8326591AE1B85F00A41D5D /* YLSaveUserDefault.m */,
 			);
 			name = HelperManager;
+			sourceTree = "<group>";
+		};
+		6B8326701AE1D78C00A41D5D /* Subclasses */ = {
+			isa = PBXGroup;
+			children = (
+				6B74D87C1AE037BF00759940 /* YLURLConnectionOperation.h */,
+				6B74D87F1AE07E2200759940 /* YLURLConnectionOperation.m */,
+				6B83266A1AE1D2DE00A41D5D /* YLURLSessionOperation.h */,
+				6B83266B1AE1D2DE00A41D5D /* YLURLSessionOperation.m */,
+				6B8326671AE1D2CA00A41D5D /* YLAFNetworkingOperation.h */,
+				6B8326681AE1D2CA00A41D5D /* YLAFNetworkingOperation.m */,
+			);
+			name = Subclasses;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -312,7 +320,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6B4F32EE1ADF0BDB0062F7F4 /* AppDelegate.m in Sources */,
-				6B8326691AE1D2CA00A41D5D /* NSAFNetworkingOperation.m in Sources */,
+				6B8326691AE1D2CA00A41D5D /* YLAFNetworkingOperation.m in Sources */,
 				6BC5F05A1ADF0C9F00ABC032 /* RootViewController.m in Sources */,
 				6B83265A1AE1B85F00A41D5D /* YLSaveUserDefault.m in Sources */,
 				6B53C64D1ADF292400153E95 /* UIBarButtonItem+Category.m in Sources */,

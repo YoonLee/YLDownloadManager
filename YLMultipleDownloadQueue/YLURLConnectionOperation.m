@@ -25,6 +25,7 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     YLog(@".operation: `%@` <error>\n", self.fileName);
+    if (self.operationCallback) { self.operationCallback(error, nil); };
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
@@ -47,10 +48,11 @@ static dispatch_once_t excuteOnceToken;
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     YLog(@".operation: `%@` <finished>\n", self.fileName);
+    
     NSString *targetPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSURL *targetURL = [NSURL fileURLWithPath:[targetPath stringByAppendingPathComponent:self.fileName]];
-    CLog(@".downloaded at %@", targetURL.relativePath);
     [self.collectingData writeToURL:targetURL atomically:YES];
+    if (self.operationCallback) { self.operationCallback(nil, targetURL.absoluteString); };
     excuteOnceToken = 0;
     [self downloadCompleted];
 }

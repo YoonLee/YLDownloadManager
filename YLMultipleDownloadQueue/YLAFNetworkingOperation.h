@@ -1,5 +1,5 @@
 //
-//  NSAFNetworkingOperation.h
+//  YLAFNetworkingOperation.h
 //  YLMultipleDownloadQueue
 //
 //  Created by Yoon Lee on 4/17/15.
@@ -7,7 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "YLOperation.h"
 
-@interface NSAFNetworkingOperation : NSOperation
+@class YLOperation;
+@interface YLAFNetworkingOperation : YLOperation
 
 @end

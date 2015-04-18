@@ -22,6 +22,7 @@
 @synthesize URL;
 @synthesize fileName;
 @synthesize collectingData;
+@synthesize operationCallback;
 
 - (instancetype)initWithURL:(NSURL *)aURL
 {

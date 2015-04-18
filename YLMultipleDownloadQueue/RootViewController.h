@@ -28,6 +28,7 @@ typedef NS_ENUM(NSInteger, SECTIONS) {
 
 @property (nonatomic, strong) NSArray *contents;
 @property (nonatomic, strong) NSArray *fileURIs;
+@property (nonatomic, strong) NSArray *typeOfOperations;
 @property (nonatomic, strong) NSOperationQueue *optQueue;
 
 - (NSString *)defaultMethodTranslation:(NSNumber *)selectedMethod;

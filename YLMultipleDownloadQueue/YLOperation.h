@@ -9,10 +9,12 @@
 #import <Foundation/Foundation.h>
 
 @interface YLOperation : NSOperation
+typedef void (^YLOperationBlock) (NSError *error, NSString *filePath);
 @property (nonatomic, strong) NSURL *URL;
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, strong) NSMutableData *collectingData;
 
+@property (nonatomic, copy) YLOperationBlock operationCallback;
 - (instancetype)initWithURL:(NSURL *)aURL;
 - (void)downloadCompleted;
 @end
