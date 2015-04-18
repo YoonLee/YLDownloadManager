@@ -1,5 +1,5 @@
 //
-//  YLWebService.h
+//  YLURLConnectionOperation.h
 //  YLMultipleDownloadQueue
 //
 //  Created by Yoon Lee on 4/16/15.
@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "YLOperation.h"
 
-@interface YLWebService : NSOperation <NSURLConnectionDataDelegate>
-- (instancetype)initWithURL:(NSURL *)qURL;
+@class YLOperation;
+@interface YLURLConnectionOperation : YLOperation <NSURLConnectionDataDelegate>
 @end

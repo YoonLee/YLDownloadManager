@@ -8,7 +8,8 @@
 
 #import "RootViewController.h"
 #import "YLDownloadManager.h"
-#import "YLWebService.h"
+#import "YLURLConnectionOperation.h"
+#import "YLURLSessionOperation.h"
 #import "YLSaveUserDefault.h"
 #import "UIBarButtonItem+Category.h"
 #import "ConfigureViewController.h"
@@ -66,13 +67,13 @@ clock_t start;
                                                                           style:UIBarButtonItemStyleDone
                                                                     actionBlock:^(UIBarButtonItem *downloadBarButton) {
                                                                         start = clock();
-                                                                        YLog(@".enuquing %@ objects\n", @(self.fileURIs.count));
+                                                                        YLog(@".enuquing %@ operation(s)\n", @(self.fileURIs.count));
                                                                         
                                                                         for (int i = 0; i < self.fileURIs.count; i ++) {
                                                                             NSDictionary *info = [self.fileURIs objectAtIndex:i];
                                                                             NSString *URLStr = [info objectForKey:@"URI"];
                                                                             // allocate instance
-                                                                            YLWebService *operation = [[YLWebService alloc] initWithURL:[NSURL URLWithString:URLStr]];
+                                                                            YLURLConnectionOperation *operation = [[YLURLConnectionOperation alloc] initWithURL:[NSURL URLWithString:URLStr]];
                                                                             // enqueue
                                                                             [self.optQueue addOperation:operation];
                                                                         }
