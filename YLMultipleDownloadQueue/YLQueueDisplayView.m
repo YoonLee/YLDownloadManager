@@ -12,7 +12,7 @@
 
 - (instancetype)initWithNumOfPipes:(NSInteger)pipes
 {
-
+    return self;
 }
 
 @end
