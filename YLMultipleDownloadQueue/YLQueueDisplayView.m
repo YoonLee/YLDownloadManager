@@ -12,11 +12,7 @@
 
 - (instancetype)initWithNumOfPipes:(NSInteger)pipes
 {
-    if (self = [super initWithFrame:<#(CGRect)#>]) {
-        
-    }
-    
-    return self;
+
 }
 
 @end
