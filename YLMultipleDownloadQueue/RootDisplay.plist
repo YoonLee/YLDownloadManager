@@ -19,5 +19,13 @@
 		<key>sectionStr</key>
 		<string>Info</string>
 	</dict>
+	<dict>
+		<key>rowTitleStrs</key>
+		<array>
+			<string></string>
+		</array>
+		<key>sectionStr</key>
+		<string>Display</string>
+	</dict>
 </array>
 </plist>

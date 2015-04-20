@@ -31,7 +31,7 @@
                                                                 NSURL *targetURL = [NSURL fileURLWithPath:[targetPath stringByAppendingPathComponent:self.fileName]];
                                                                 [[NSFileManager defaultManager] moveItemAtURL:location toURL:targetURL error:NULL];
                                                                 
-                                                                [self downloadCompleted];
+                                                                [super downloadCompleted];
                                                             }];
     [downloadTask resume];
 }

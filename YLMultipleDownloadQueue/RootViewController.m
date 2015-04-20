@@ -177,6 +177,7 @@ clock_t start;
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     [cell.textLabel setFont:[UIFont systemFontOfSize:14.f]];
     [cell.detailTextLabel setFont:[UIFont systemFontOfSize:14.f]];
     
@@ -241,11 +242,6 @@ clock_t start;
     }
     
     return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)didReceiveMemoryWarning

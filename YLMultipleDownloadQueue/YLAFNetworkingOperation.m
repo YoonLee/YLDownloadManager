@@ -31,7 +31,7 @@
                                                                   }
                                                             completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
                                                                 YLog(@".operation: `%@` <finished>\n", self.fileName);
-                                                                [self downloadCompleted];
+                                                                [super downloadCompleted];
                                                             }];
     [downloadTask resume];
 }

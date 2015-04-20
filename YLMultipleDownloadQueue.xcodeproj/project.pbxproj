@@ -15,6 +15,7 @@
 		6B53C6461ADF0F4600153E95 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B53C6451ADF0F4600153E95 /* Default-568h@2x.png */; };
 		6B53C64D1ADF292400153E95 /* UIBarButtonItem+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B53C64C1ADF292400153E95 /* UIBarButtonItem+Category.m */; };
 		6B53C6501ADF294300153E95 /* NSObject+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B53C64F1ADF294300153E95 /* NSObject+Category.m */; };
+		6B5E82DB1AE571F800991C06 /* YLQueueDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B5E82DA1AE571F800991C06 /* YLQueueDisplayView.m */; };
 		6B74D8801AE07E2200759940 /* YLURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B74D87F1AE07E2200759940 /* YLURLConnectionOperation.m */; };
 		6B74D8851AE0854E00759940 /* YLConsoleLogTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B74D8841AE0854E00759940 /* YLConsoleLogTextView.m */; };
 		6B8326551AE1AC2800A41D5D /* ConfigureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B8326541AE1AC2800A41D5D /* ConfigureViewController.m */; };
@@ -49,6 +50,8 @@
 		6B53C64C1ADF292400153E95 /* UIBarButtonItem+Category.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBarButtonItem+Category.m"; sourceTree = "<group>"; };
 		6B53C64E1ADF294300153E95 /* NSObject+Category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Category.h"; sourceTree = "<group>"; };
 		6B53C64F1ADF294300153E95 /* NSObject+Category.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Category.m"; sourceTree = "<group>"; };
+		6B5E82D91AE571F800991C06 /* YLQueueDisplayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YLQueueDisplayView.h; sourceTree = "<group>"; };
+		6B5E82DA1AE571F800991C06 /* YLQueueDisplayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YLQueueDisplayView.m; sourceTree = "<group>"; };
 		6B74D87C1AE037BF00759940 /* YLURLConnectionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YLURLConnectionOperation.h; sourceTree = "<group>"; };
 		6B74D87F1AE07E2200759940 /* YLURLConnectionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YLURLConnectionOperation.m; sourceTree = "<group>"; };
 		6B74D8831AE0854E00759940 /* YLConsoleLogTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YLConsoleLogTextView.h; sourceTree = "<group>"; };
@@ -125,6 +128,7 @@
 		6B4F32E71ADF0BDB0062F7F4 /* YLMultipleDownloadQueue */ = {
 			isa = PBXGroup;
 			children = (
+				6B5E82D81AE571DB00991C06 /* View */,
 				6B74D8821AE0851E00759940 /* HelperManager */,
 				6B74D87B1AE0373500759940 /* Operations */,
 				6B53C64A1ADF290800153E95 /* Library */,
@@ -175,6 +179,15 @@
 				6B53C6431ADF0EAC00153E95 /* YLDownloadManager.m */,
 			);
 			name = Library;
+			sourceTree = "<group>";
+		};
+		6B5E82D81AE571DB00991C06 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				6B5E82D91AE571F800991C06 /* YLQueueDisplayView.h */,
+				6B5E82DA1AE571F800991C06 /* YLQueueDisplayView.m */,
+			);
+			name = View;
 			sourceTree = "<group>";
 		};
 		6B74D87B1AE0373500759940 /* Operations */ = {
@@ -325,6 +338,7 @@
 				6B83265A1AE1B85F00A41D5D /* YLSaveUserDefault.m in Sources */,
 				6B53C64D1ADF292400153E95 /* UIBarButtonItem+Category.m in Sources */,
 				6B74D8851AE0854E00759940 /* YLConsoleLogTextView.m in Sources */,
+				6B5E82DB1AE571F800991C06 /* YLQueueDisplayView.m in Sources */,
 				6B53C6441ADF0EAC00153E95 /* YLDownloadManager.m in Sources */,
 				6B4F32EB1ADF0BDB0062F7F4 /* main.m in Sources */,
 				6B83266C1AE1D2DE00A41D5D /* YLURLSessionOperation.m in Sources */,

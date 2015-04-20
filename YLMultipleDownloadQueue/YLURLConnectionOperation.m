@@ -54,7 +54,7 @@ static dispatch_once_t excuteOnceToken;
     [self.collectingData writeToURL:targetURL atomically:YES];
     if (self.operationCallback) { self.operationCallback(nil, targetURL.absoluteString); };
     excuteOnceToken = 0;
-    [self downloadCompleted];
+    [super downloadCompleted];
 }
 
 @end
