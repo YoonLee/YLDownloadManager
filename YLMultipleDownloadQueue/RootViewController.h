@@ -17,6 +17,8 @@ typedef NS_ENUM(NSInteger, METHODS_KINDS) {
 typedef NS_ENUM(NSInteger, SECTIONS) {
     CONSOLE = 0,
     INFO,
+    TASK_OPERATION,
+    DISPLAY,
 };
 
 @interface RootViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
@@ -32,5 +34,5 @@ typedef NS_ENUM(NSInteger, SECTIONS) {
 @property (nonatomic, strong) NSOperationQueue *optQueue;
 
 - (NSString *)defaultMethodTranslation:(NSNumber *)selectedMethod;
-
+- (BOOL)isPaused:(NSString *)cellStr;
 @end

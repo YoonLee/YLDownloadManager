@@ -7,7 +7,6 @@
 //
 
 #import "RootViewController.h"
-#import "YLDownloadManager.h"
 #import "YLURLConnectionOperation.h"
 #import "YLURLSessionOperation.h"
 #import "YLSaveUserDefault.h"
@@ -139,6 +138,12 @@ clock_t start;
     }
 }
 
+- (BOOL)isPaused:(NSString *)cellStr
+{
+    return [cellStr isEqualToString:@"Pause All"];
+}
+
+#pragma marks - UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     return 30.f;
@@ -147,7 +152,7 @@ clock_t start;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat rowHeight = HEADER_PANEL_HEIGHT;
-    if (indexPath.section == INFO) {
+    if (indexPath.section == INFO || indexPath.section == TASK_OPERATION) {
         rowHeight = 35.f;
     }
     
@@ -178,8 +183,12 @@ clock_t start;
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    if (indexPath.section == TASK_OPERATION) {
+        [cell setSelectionStyle:UITableViewCellSelectionStyleDefault];
+    }
     [cell.textLabel setFont:[UIFont systemFontOfSize:14.f]];
     [cell.detailTextLabel setFont:[UIFont systemFontOfSize:14.f]];
+    cell.imageView.image = nil;
     
     NSDictionary *info = [self.contents objectAtIndex:indexPath.section];
     NSString *rowTitleStr = [[info objectForKey:@"rowTitleStrs"] objectAtIndex:indexPath.row];
@@ -210,6 +219,14 @@ clock_t start;
         }
         
         [cell.detailTextLabel setText:detailStr];
+    }
+    else if (indexPath.section == TASK_OPERATION) {
+        UIImage *cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+        if ([self isPaused:cell.textLabel.text]) {
+            cellImage = [[FAKFontAwesome pauseIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+        }
+        
+        [cell.imageView setImage:cellImage];
     }
 }
 
@@ -242,6 +259,23 @@ clock_t start;
     }
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    UIImage *cellImage = [[FAKFontAwesome pauseIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+    
+    if ([self isPaused:cell.textLabel.text]) {
+        [cell.textLabel setText:@"Resume All"];
+        cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+    }
+    else {
+        [cell.textLabel setText:@"Pause All"];
+    }
+    
+    [cell.imageView setImage:cellImage];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)didReceiveMemoryWarning

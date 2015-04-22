@@ -22,6 +22,14 @@
 	<dict>
 		<key>rowTitleStrs</key>
 		<array>
+			<string>Pause</string>
+		</array>
+		<key>sectionStr</key>
+		<string>Task Operation</string>
+	</dict>
+	<dict>
+		<key>rowTitleStrs</key>
+		<array>
 			<string></string>
 		</array>
 		<key>sectionStr</key>
