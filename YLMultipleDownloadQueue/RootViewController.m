@@ -71,7 +71,7 @@ clock_t start;
                                                                         YLog(@".enuquing %@ operation(s)\n", @(self.fileURIs.count));
                                                                         NSInteger selected = [[[YLSaveUserDefault sharedInstance] getDefaultMethod] integerValue];
                                                                         NSString *nameOfOperationClass = NSStringFromClass(self.typeOfOperations[selected]);
-
+                                                                        
                                                                         for (int i = 0; i < self.fileURIs.count; i ++) {
                                                                             NSDictionary *info = [self.fileURIs objectAtIndex:i];
                                                                             NSString *URLStr = [info objectForKey:@"URI"];
@@ -263,19 +263,27 @@ clock_t start;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    UIImage *cellImage = [[FAKFontAwesome pauseIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
-    
-    if ([self isPaused:cell.textLabel.text]) {
-        [cell.textLabel setText:@"Resume All"];
-        cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+    if (indexPath.section == TASK_OPERATION) {
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        UIImage *cellImage = [[FAKFontAwesome pauseIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+        
+        if ([self isPaused:cell.textLabel.text]) {
+            [cell.textLabel setText:@"Resume All"];
+            cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+            [self.optQueue.operations enumerateObjectsUsingBlock:^(YLOperation *operation, NSUInteger idx, BOOL *stop) {
+                
+            }];
+        }
+        else {
+            [cell.textLabel setText:@"Pause All"];
+            [self.optQueue.operations enumerateObjectsUsingBlock:^(YLOperation *operation, NSUInteger idx, BOOL *stop) {
+                
+            }];
+        }
+        
+        [cell.imageView setImage:cellImage];
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
-    else {
-        [cell.textLabel setText:@"Pause All"];
-    }
-    
-    [cell.imageView setImage:cellImage];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)didReceiveMemoryWarning

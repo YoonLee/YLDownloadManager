@@ -8,7 +8,7 @@
 		<key>rowTitleStrs</key>
 		<array>
 			<string>NSURLConnection</string>
-			<string>NSURLSession (iOS 7.0 +)</string>
+			<string>NSURLSession (Above iOS 7.0 +)</string>
 			<string>AFNetworking</string>
 		</array>
 	</dict>
@@ -22,6 +22,8 @@
 			<string>3</string>
 			<string>4</string>
 			<string>5</string>
+			<string>6</string>
+			<string>7</string>
 		</array>
 	</dict>
 	<dict>
