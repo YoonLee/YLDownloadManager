@@ -97,6 +97,7 @@
 
 - (void)suspend {}
 - (void)resume  {}
+- (void)cancel  {}
 
 - (BOOL)isConcurrent
 {

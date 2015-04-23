@@ -61,4 +61,10 @@
     [self.downloadTask resume];
 }
 
+- (void)cancel
+{
+    [self.downloadTask cancel];
+    [self downloadCompleted];
+}
+
 @end

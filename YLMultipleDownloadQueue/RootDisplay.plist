@@ -23,6 +23,7 @@
 		<key>rowTitleStrs</key>
 		<array>
 			<string>Pause</string>
+			<string>Cancel</string>
 		</array>
 		<key>sectionStr</key>
 		<string>Task Operation</string>

@@ -17,4 +17,5 @@ typedef void (^YLOperationBlock) (NSError *error, NSString *filePath);
 - (void)downloadCompleted;
 - (void)suspend;
 - (void)resume;
+- (void)cancel;
 @end

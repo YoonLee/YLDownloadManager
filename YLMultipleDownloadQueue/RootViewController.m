@@ -42,9 +42,9 @@ clock_t start;
     
     // KVO
     [[[YLOperationQueueManager sharedInstance] operationQueue] addObserver:self
-               forKeyPath:@"operations"
-                  options:NSKeyValueObservingOptionNew
-                  context:NULL];
+                                                                forKeyPath:@"operations"
+                                                                   options:NSKeyValueObservingOptionNew
+                                                                   context:NULL];
     
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"RootDisplay" ofType:@"plist"];
     contents = [[NSArray alloc] initWithContentsOfFile:filePath];
@@ -220,9 +220,15 @@ clock_t start;
         [cell.detailTextLabel setText:detailStr];
     }
     else if (indexPath.section == TASK_OPERATION) {
-        UIImage *cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
-        if ([self isPaused:cell.textLabel.text]) {
-            cellImage = [[FAKFontAwesome pauseIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+        UIImage *cellImage = nil;
+        if (indexPath.row == 0) {
+            cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+            if ([self isPaused:cell.textLabel.text]) {
+                cellImage = [[FAKFontAwesome pauseIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+            }
+        }
+        else if (indexPath.row == 1) {
+            cellImage = [[FAKFontAwesome warningIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
         }
         
         [cell.imageView setImage:cellImage];
@@ -263,24 +269,29 @@ clock_t start;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == TASK_OPERATION) {
-        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-        UIImage *cellImage = [[FAKFontAwesome pauseIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
-        
-        if ([self isPaused:cell.textLabel.text]) {
-            CLog(@".Pausing ...");
-            [cell.textLabel setText:@"Resume"];
-            cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
-            [[YLOperationQueueManager sharedInstance] pauseOperations];
+        if (indexPath.row == 0) {
+            UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+            UIImage *cellImage = [[FAKFontAwesome pauseIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+            
+            if ([self isPaused:cell.textLabel.text]) {
+                CLog(@".Pausing ...");
+                [cell.textLabel setText:@"Resume"];
+                cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+                [[YLOperationQueueManager sharedInstance] pauseOperations];
+            }
+            else {
+                CLog(@".Resuming ...");
+                YLog(@".remaining operations are %@\n", @([[YLOperationQueueManager sharedInstance] numOfOperations]));
+                [cell.textLabel setText:@"Pause"];
+                [[YLOperationQueueManager sharedInstance] continueOperations];
+            }
+            
+            [cell.imageView setImage:cellImage];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
         }
-        else {
-            CLog(@".Resuming ...");
-            YLog(@".remaining operations are %@\n", @([[YLOperationQueueManager sharedInstance] numOfOperations]));
-            [cell.textLabel setText:@"Pause"];
-            [[YLOperationQueueManager sharedInstance] continueOperations];
-        }
+    }
+    else if (indexPath.row == 1) {
         
-        [cell.imageView setImage:cellImage];
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
 
