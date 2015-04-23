@@ -21,13 +21,22 @@
 @implementation YLOperation
 @synthesize URL;
 @synthesize fileName;
-@synthesize collectingData;
 @synthesize operationCallback;
 
 - (instancetype)initWithURL:(NSURL *)aURL
 {
     if (self = [super init]) {
         URL = aURL;
+    }
+    
+    return self;
+}
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        [self setExecuting:NO];
+        [self setFinished:NO];
     }
     
     return self;
@@ -43,10 +52,17 @@
 // do override this start method
 - (void)start
 {
-    if( [self isFinished] || [self isCancelled] ) { [self downloadCompleted]; return; }
-    [self setExecuting:YES];
+    if ([self isCancelled]) {
+        [self downloadCompleted];
+        return;
+    }
     
-    collectingData = [[NSMutableData alloc] init];
+    if( [self isFinished]) {
+        [self downloadCompleted];
+        return;
+    }
+    
+    [self setExecuting:YES];
 }
 
 - (BOOL)isFinished
@@ -78,6 +94,9 @@
     _isExecuting = executing;
     [self didChangeValueForKey:kExecuting];
 }
+
+- (void)suspend {}
+- (void)resume  {}
 
 - (BOOL)isConcurrent
 {

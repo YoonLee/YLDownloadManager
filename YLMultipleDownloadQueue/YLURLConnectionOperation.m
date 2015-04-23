@@ -8,29 +8,51 @@
 
 #import "YLURLConnectionOperation.h"
 
+@interface YLURLConnectionOperation()
+@property (nonatomic, strong) NSURLConnection *connection;
+@property (nonatomic, assign) NSInteger expectedContentLength;
+@property (nonatomic, strong) NSMutableData *downloadData;
+@end
+
 @implementation YLURLConnectionOperation
+@synthesize connection;
+@synthesize expectedContentLength;
+@synthesize downloadData;
+
 - (void)start
 {
     // override from YLOperation
     [super start];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:self.URL];
-    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request
-                                                                  delegate:self
-                                                          startImmediately:NO];
-    [connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    [connection start];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.URL];
+    connection = [[NSURLConnection alloc] initWithRequest:request
+                                                 delegate:self
+                                         startImmediately:NO];
+    [self.connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    [self.connection start];
+    
+    downloadData = [[NSMutableData alloc] init];
+}
+
+- (void)cancel
+{
+    [super cancel];
+    
+    [self.connection performSelectorOnMainThread:@selector(cancel)
+                                      withObject:nil
+                                   waitUntilDone:NO];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    YLog(@".operation: `%@` <error>\n", self.fileName);
+    YLog(@".operation: `%@` <error>\n", error);
     if (self.operationCallback) { self.operationCallback(error, nil); };
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     self.fileName = response.suggestedFilename;
+    self.expectedContentLength = response.expectedContentLength;
     YLog(@".operation: `%@` <response received>\n", self.fileName);
 }
 
@@ -42,16 +64,20 @@ static dispatch_once_t excuteOnceToken;
         YLog(@".operation: `%@` <downloading>\n", self.fileName);
     });
     
-    [self.collectingData appendData:data];
+    [self.downloadData appendData:data];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     YLog(@".operation: `%@` <finished>\n", self.fileName);
     
+    if (self.expectedContentLength != self.downloadData.length) {
+        NSLog(@".incompleted");
+    }
+    
     NSString *targetPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSURL *targetURL = [NSURL fileURLWithPath:[targetPath stringByAppendingPathComponent:self.fileName]];
-    [self.collectingData writeToURL:targetURL atomically:YES];
+    [self.downloadData writeToURL:targetURL atomically:YES];
     if (self.operationCallback) { self.operationCallback(nil, targetURL.absoluteString); };
     excuteOnceToken = 0;
     [super downloadCompleted];

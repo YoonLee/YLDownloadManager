@@ -33,7 +33,7 @@ clock_t start;
         [self setEdgesForExtendedLayout:UIRectEdgeNone];
     }
     
-    [self setTitle:@"Queue Manager"];
+    [self setTitle:@"OperationQueue"];
     
     optQueue = [[NSOperationQueue alloc] init];
     NSInteger defaultConcurrentNum = [[[YLSaveUserDefault sharedInstance] getDefaultConCurNum] integerValue] + 1;
@@ -71,7 +71,7 @@ clock_t start;
                                                                         YLog(@".enuquing %@ operation(s)\n", @(self.fileURIs.count));
                                                                         NSInteger selected = [[[YLSaveUserDefault sharedInstance] getDefaultMethod] integerValue];
                                                                         NSString *nameOfOperationClass = NSStringFromClass(self.typeOfOperations[selected]);
-                                                                        
+                                                                        NSMutableArray *operations = [[NSMutableArray alloc] init];
                                                                         for (int i = 0; i < self.fileURIs.count; i ++) {
                                                                             NSDictionary *info = [self.fileURIs objectAtIndex:i];
                                                                             NSString *URLStr = [info objectForKey:@"URI"];
@@ -79,8 +79,10 @@ clock_t start;
                                                                             Class class = NSClassFromString(nameOfOperationClass);
                                                                             YLOperation *operation = [(YLOperation *)[class alloc] initWithURL:[NSURL URLWithString:URLStr]];
                                                                             // enqueue
-                                                                            [self.optQueue addOperation:operation];
+                                                                            [operations addObject:operation];
                                                                         }
+                                                                        
+                                                                        [self.optQueue addOperations:operations waitUntilFinished:NO];
                                                                     }];
     UIImage *options = [[FAKFontAwesome gearsIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
     UIBarButtonItem *optionBarButton = [[UIBarButtonItem alloc] initWithImage:options
@@ -133,14 +135,14 @@ clock_t start;
             NSString *targetPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
             YLog(@"\n.download completed!\n.time took at %@ secs", @(getEstimateTime(start, finish)));
             YLog(@"\n.num of max concurrent used = %@\n", @(self.optQueue.maxConcurrentOperationCount));
-            YLog(@"LINK: %@\n\nINSTRUCTIONS\n1)copy the link\n2)go to terminal->cd [directory path]\n3)type open .\n\n", targetPath);
+            CLog(@"LINK: %@\n\nINSTRUCTIONS\n1)copy the link\n2)go to terminal->cd [directory path]\n3)type open .\n\n", targetPath);
         }
     }
 }
 
 - (BOOL)isPaused:(NSString *)cellStr
 {
-    return [cellStr isEqualToString:@"Pause All"];
+    return [cellStr isEqualToString:@"Pause"];
 }
 
 #pragma marks - UITableViewDelegate
@@ -268,16 +270,21 @@ clock_t start;
         UIImage *cellImage = [[FAKFontAwesome pauseIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
         
         if ([self isPaused:cell.textLabel.text]) {
-            [cell.textLabel setText:@"Resume All"];
+            CLog(@".Pausing ...");
+            [cell.textLabel setText:@"Resume"];
             cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
+            [self.optQueue setSuspended:YES];
             [self.optQueue.operations enumerateObjectsUsingBlock:^(YLOperation *operation, NSUInteger idx, BOOL *stop) {
-                
+                [operation suspend];
             }];
         }
         else {
-            [cell.textLabel setText:@"Pause All"];
+            CLog(@".Resuming ...");
+            YLog(@".remaining operations are %@\n", @(self.optQueue.operationCount));
+            [cell.textLabel setText:@"Pause"];
+            [self.optQueue setSuspended:NO];
             [self.optQueue.operations enumerateObjectsUsingBlock:^(YLOperation *operation, NSUInteger idx, BOOL *stop) {
-                
+                [operation resume];
             }];
         }
         
