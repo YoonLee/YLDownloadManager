@@ -13,6 +13,7 @@
 #import "YLAFNetworkingOperation.h"
 #import "UIBarButtonItem+Category.h"
 #import "ConfigureViewController.h"
+#import "YLOperationQueueManager.h"
 #import <FontAwesomeKit/FontAwesomeKit.h>
 #define HEADER_PANEL_HEIGHT             220.f
 
@@ -20,7 +21,6 @@
 @synthesize contents;
 @synthesize fileURIs;
 @synthesize typeOfOperations;
-@synthesize optQueue;
 
 clock_t start;
 
@@ -35,14 +35,13 @@ clock_t start;
     
     [self setTitle:@"OperationQueue"];
     
-    optQueue = [[NSOperationQueue alloc] init];
     NSInteger defaultConcurrentNum = [[[YLSaveUserDefault sharedInstance] getDefaultConCurNum] integerValue] + 1;
-    [self.optQueue setMaxConcurrentOperationCount:defaultConcurrentNum];
+    [[YLOperationQueueManager sharedInstance] setNumOfMaximumConcurrent:defaultConcurrentNum];
     
     typeOfOperations = @[[YLURLConnectionOperation class], [YLURLSessionOperation class], [YLAFNetworkingOperation class]];
     
     // KVO
-    [optQueue addObserver:self
+    [[[YLOperationQueueManager sharedInstance] operationQueue] addObserver:self
                forKeyPath:@"operations"
                   options:NSKeyValueObservingOptionNew
                   context:NULL];
@@ -71,7 +70,7 @@ clock_t start;
                                                                         YLog(@".enuquing %@ operation(s)\n", @(self.fileURIs.count));
                                                                         NSInteger selected = [[[YLSaveUserDefault sharedInstance] getDefaultMethod] integerValue];
                                                                         NSString *nameOfOperationClass = NSStringFromClass(self.typeOfOperations[selected]);
-                                                                        NSMutableArray *operations = [[NSMutableArray alloc] init];
+                                                                        
                                                                         for (int i = 0; i < self.fileURIs.count; i ++) {
                                                                             NSDictionary *info = [self.fileURIs objectAtIndex:i];
                                                                             NSString *URLStr = [info objectForKey:@"URI"];
@@ -79,10 +78,8 @@ clock_t start;
                                                                             Class class = NSClassFromString(nameOfOperationClass);
                                                                             YLOperation *operation = [(YLOperation *)[class alloc] initWithURL:[NSURL URLWithString:URLStr]];
                                                                             // enqueue
-                                                                            [operations addObject:operation];
+                                                                            [[YLOperationQueueManager sharedInstance] enqueueOperation:operation];
                                                                         }
-                                                                        
-                                                                        [self.optQueue addOperations:operations waitUntilFinished:NO];
                                                                     }];
     UIImage *options = [[FAKFontAwesome gearsIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
     UIBarButtonItem *optionBarButton = [[UIBarButtonItem alloc] initWithImage:options
@@ -96,7 +93,7 @@ clock_t start;
                                                                                   break;
                                                                               case NUM_OF_MAX_CONCURRENT: {
                                                                                   NSInteger defaultConcurrentNum = [[[YLSaveUserDefault sharedInstance] getDefaultConCurNum] integerValue] + 1;
-                                                                                  [optQueue setMaxConcurrentOperationCount:defaultConcurrentNum];
+                                                                                  [[YLOperationQueueManager sharedInstance] setNumOfMaximumConcurrent:defaultConcurrentNum];
                                                                                   break;
                                                                               }
                                                                           }
@@ -134,7 +131,7 @@ clock_t start;
             clock_t finish = clock();
             NSString *targetPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
             YLog(@"\n.download completed!\n.time took at %@ secs", @(getEstimateTime(start, finish)));
-            YLog(@"\n.num of max concurrent used = %@\n", @(self.optQueue.maxConcurrentOperationCount));
+            YLog(@"\n.num of max concurrent used = %@\n", @([[YLOperationQueueManager sharedInstance] numOfOperations]));
             CLog(@"LINK: %@\n\nINSTRUCTIONS\n1)copy the link\n2)go to terminal->cd [directory path]\n3)type open .\n\n", targetPath);
         }
     }
@@ -273,19 +270,13 @@ clock_t start;
             CLog(@".Pausing ...");
             [cell.textLabel setText:@"Resume"];
             cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
-            [self.optQueue setSuspended:YES];
-            [self.optQueue.operations enumerateObjectsUsingBlock:^(YLOperation *operation, NSUInteger idx, BOOL *stop) {
-                [operation suspend];
-            }];
+            [[YLOperationQueueManager sharedInstance] pauseOperations];
         }
         else {
             CLog(@".Resuming ...");
-            YLog(@".remaining operations are %@\n", @(self.optQueue.operationCount));
+            YLog(@".remaining operations are %@\n", @([[YLOperationQueueManager sharedInstance] numOfOperations]));
             [cell.textLabel setText:@"Pause"];
-            [self.optQueue setSuspended:NO];
-            [self.optQueue.operations enumerateObjectsUsingBlock:^(YLOperation *operation, NSUInteger idx, BOOL *stop) {
-                [operation resume];
-            }];
+            [[YLOperationQueueManager sharedInstance] continueOperations];
         }
         
         [cell.imageView setImage:cellImage];

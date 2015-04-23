@@ -24,14 +24,11 @@ typedef NS_ENUM(NSInteger, SECTIONS) {
 @interface RootViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {
     NSArray *contents;
-    
-    NSOperationQueue *optQueue;
 }
 
 @property (nonatomic, strong) NSArray *contents;
 @property (nonatomic, strong) NSArray *fileURIs;
 @property (nonatomic, strong) NSArray *typeOfOperations;
-@property (nonatomic, strong) NSOperationQueue *optQueue;
 
 - (NSString *)defaultMethodTranslation:(NSNumber *)selectedMethod;
 - (BOOL)isPaused:(NSString *)cellStr;

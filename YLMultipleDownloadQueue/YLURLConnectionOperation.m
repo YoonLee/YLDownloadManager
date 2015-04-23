@@ -10,7 +10,7 @@
 
 @interface YLURLConnectionOperation()
 @property (nonatomic, strong) NSURLConnection *connection;
-@property (nonatomic, assign) NSInteger expectedContentLength;
+@property (nonatomic, assign) long long expectedContentLength;
 @property (nonatomic, strong) NSMutableData *downloadData;
 @end
 
@@ -32,15 +32,6 @@
     [self.connection start];
     
     downloadData = [[NSMutableData alloc] init];
-}
-
-- (void)cancel
-{
-    [super cancel];
-    
-    [self.connection performSelectorOnMainThread:@selector(cancel)
-                                      withObject:nil
-                                   waitUntilDone:NO];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
@@ -80,7 +71,22 @@ static dispatch_once_t excuteOnceToken;
     [self.downloadData writeToURL:targetURL atomically:YES];
     if (self.operationCallback) { self.operationCallback(nil, targetURL.absoluteString); };
     excuteOnceToken = 0;
-    [super downloadCompleted];
+    [self performSelector:@selector(downloadCompleted)
+                 onThread:[NSThread mainThread]
+               withObject:nil
+            waitUntilDone:NO];
+}
+
+- (void)suspend
+{
+    [self.connection cancel];
+}
+
+- (void)resume
+{
+    // <BRB>
+    // should have use `Range` from HTML header, but will do later
+    self.connection = nil;
 }
 
 @end
