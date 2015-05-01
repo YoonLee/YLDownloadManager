@@ -9,12 +9,6 @@
 #import "YLOperation.h"
 
 @interface YLOperation()
-{
-    // ivars
-@private
-    BOOL _isFinished;
-    BOOL _isExecuting;
-}
 
 @end
 
@@ -22,6 +16,7 @@
 @synthesize URL;
 @synthesize fileName;
 @synthesize operationCallback;
+@synthesize operationStatus;
 
 - (instancetype)initWithURL:(NSURL *)aURL
 {
@@ -35,8 +30,8 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        [self setExecuting:NO];
-        [self setFinished:NO];
+        // operation starts waiting status
+        self.operationStatus = YLOperationStatusWaiting;
     }
     
     return self;
@@ -44,60 +39,45 @@
 
 - (void)downloadCompleted
 {
-    [self setExecuting:NO];
-    [self setFinished:YES];
+    
 }
 
 #pragma marks - NSOperation Overrides
 // do override this start method
 - (void)start
 {
-    if ([self isCancelled]) {
-        [self downloadCompleted];
-        return;
-    }
-    
-    if( [self isFinished]) {
-        [self downloadCompleted];
-        return;
-    }
-    
-    [self setExecuting:YES];
+    self.operationStatus = YLOperationStatusExecuting;
 }
 
-- (BOOL)isFinished
+- (BOOL)isReady
 {
-    return _isFinished;
-}
-
-- (void)setFinished:(BOOL)finished
-{
-    // usage of key and willChangeValueForKey used for KVC & KVO
-    static NSString *kFinished = @"isFinished";
-    
-    [self willChangeValueForKey:kFinished];
-    _isFinished = finished;
-    [self didChangeValueForKey:kFinished];
+    return self.operationStatus == YLOperationStatusReady;
 }
 
 - (BOOL)isExecuting
 {
-    return _isExecuting;
+    return self.operationStatus == YLOperationStatusExecuting;
 }
 
-- (void)setExecuting:(BOOL)executing
+- (BOOL)isCancelled
 {
-    // usage of key and willChangeValueForKey used for KVC & KVO
-    static NSString *kExecuting = @"isExecuting";
-    
-    [self willChangeValueForKey:kExecuting];
-    _isExecuting = executing;
-    [self didChangeValueForKey:kExecuting];
+    return self.operationStatus == YLOperationStatusCancelled;
+}
+
+- (BOOL)isFinished
+{
+    return self.operationStatus == YLOperationStatusFinished;
 }
 
 - (void)suspend {}
 - (void)resume  {}
-- (void)cancel  {}
+
+- (void)cancel
+{
+    @synchronized (self) {
+        [super cancel];
+    }
+}
 
 - (BOOL)isConcurrent
 {

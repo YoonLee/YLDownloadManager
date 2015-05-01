@@ -8,11 +8,21 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSInteger, YLOperationStatus) {
+    YLOperationStatusReady = 0,
+    YLOperationStatusWaiting,
+    YLOperationStatusExecuting,
+    YLOperationStatusCancelled,
+    YLOperationStatusFinished,
+};
+
 @interface YLOperation : NSOperation
 typedef void (^YLOperationBlock) (NSError *error, NSString *filePath);
 @property (nonatomic, strong) NSURL *URL;
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, copy) YLOperationBlock operationCallback;
+@property (nonatomic, assign) YLOperationStatus operationStatus;
+
 - (instancetype)initWithURL:(NSURL *)aURL;
 - (void)downloadCompleted;
 - (void)suspend;

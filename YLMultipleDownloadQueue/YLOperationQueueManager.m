@@ -8,6 +8,10 @@
 
 #import "YLOperationQueueManager.h"
 
+@interface YLOperationQueueManager()
+@property (nonatomic, strong, readwrite) NSRecursiveLock *lock;
+@end
+
 @implementation YLOperationQueueManager
 @synthesize operationQueue;
 
@@ -19,6 +23,7 @@
     dispatch_once(&queueToken, ^{
         shared = [[YLOperationQueueManager alloc] init];
         [shared setOperationQueue:[[NSOperationQueue alloc] init]];
+        [shared setLock:[[NSRecursiveLock alloc] init]];
     });
     
     return shared;
@@ -36,37 +41,52 @@
 
 - (void)enqueueOperation:(YLOperation *)operation
 {
+    [self.lock lock];
     [self.operationQueue addOperation:operation];
+    
+    // dequeue
+    [operation setCompletionBlock:^{
+        CLog(@".dequeue");
+    }];
+     
+    [self.lock unlock];
 }
 
 - (void)enqueueOperations:(NSArray *)operations
 {
+    [self.lock lock];
+    [self.operationQueue setSuspended:NO];
     [self.operationQueue addOperations:operations waitUntilFinished:NO];
+    [self.lock unlock];
 }
 
 - (void)pauseOperations
 {
+    [self.lock lock];
     [self.operationQueue.operations enumerateObjectsUsingBlock:^(YLOperation *operation, NSUInteger idx, BOOL *stop) {
         [operation suspend];
     }];
     
     [self.operationQueue setSuspended:YES];
+    [self.lock unlock];
 }
 
 - (void)continueOperations
 {
+    [self.lock lock];
     [self.operationQueue.operations enumerateObjectsUsingBlock:^(YLOperation *operation, NSUInteger idx, BOOL *stop) {
         [operation resume];
     }];
     
     [self.operationQueue setSuspended:NO];
+    [self.lock unlock];
 }
 
 - (void)cancelAllOperations
 {
-    [self.operationQueue.operations enumerateObjectsUsingBlock:^(YLOperation *operation, NSUInteger idx, BOOL *stop) {
-        [operation suspend];
-    }];
+    [self.lock lock];
+    [self.operationQueue cancelAllOperations];
+    [self.lock unlock];
 }
 
 @end

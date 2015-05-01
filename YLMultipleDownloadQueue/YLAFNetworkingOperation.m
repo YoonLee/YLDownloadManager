@@ -49,6 +49,12 @@
                                       }
                                   }];
     [self.downloadTask resume];
+    
+    [manager setTaskDidCompleteBlock:^(NSURLSession *session, NSURLSessionTask *task, NSError *error) {
+        if (error) {
+            [self downloadCompleted];
+        }
+    }];
 }
 
 - (void)suspend
@@ -63,8 +69,10 @@
 
 - (void)cancel
 {
-    [self.downloadTask cancel];
-    [self downloadCompleted];
+    @synchronized (self) {
+        [super cancel];
+        [self.downloadTask cancel];
+    }
 }
 
 @end

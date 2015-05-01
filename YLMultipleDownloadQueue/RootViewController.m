@@ -274,13 +274,14 @@ clock_t start;
             UIImage *cellImage = [[FAKFontAwesome pauseIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
             
             if ([self isPaused:cell.textLabel.text]) {
-                CLog(@".Pausing ...");
+                YLog(@".Pausing ...");
+                YLog(@".remaining operations are %@\n", @([[YLOperationQueueManager sharedInstance] numOfOperations]));
                 [cell.textLabel setText:@"Resume"];
                 cellImage = [[FAKFontAwesome playIconWithSize:20] imageWithSize:CGSizeMake(20, 20)];
                 [[YLOperationQueueManager sharedInstance] pauseOperations];
             }
             else {
-                CLog(@".Resuming ...");
+                YLog(@".Resuming ...");
                 YLog(@".remaining operations are %@\n", @([[YLOperationQueueManager sharedInstance] numOfOperations]));
                 [cell.textLabel setText:@"Pause"];
                 [[YLOperationQueueManager sharedInstance] continueOperations];
@@ -289,9 +290,12 @@ clock_t start;
             [cell.imageView setImage:cellImage];
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
         }
-    }
-    else if (indexPath.row == 1) {
-        
+        else if (indexPath.row == 1) {
+            YLog(@".Cancelling ...");
+            YLog(@".remaining operations are %@\n", @([[YLOperationQueueManager sharedInstance] numOfOperations]));
+            [[YLOperationQueueManager sharedInstance] cancelAllOperations];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        }
     }
 }
 
